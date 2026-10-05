@@ -1,0 +1,43 @@
+{
+  "name": "@arfct/agent-connection",
+  "version": "0.1.0",
+  "description": "How a person connects an agent host (Claude, ChatGPT, Gemini, Cursor, VS Code, Muse, anything else) to a product: the host table, the per-host setup snippets, a markdown guide, a ChatGPT submission builder, and web components that render them.",
+  "license": "MIT",
+  "type": "module",
+  "repository": "github:arfct/agent-connection",
+  "homepage": "https://github.com/arfct/agent-connection",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./element": {
+      "types": "./src/element.d.ts",
+      "default": "./src/element.js"
+    },
+    "./chatgpt": {
+      "types": "./src/chatgpt.d.ts",
+      "default": "./src/chatgpt.js"
+    },
+    "./react": {
+      "types": "./src/react.d.ts",
+      "default": "./src/react.js"
+    }
+  },
+  "scripts": {
+    "test": "node --test",
+    "lint": "biome check .",
+    "format": "biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
