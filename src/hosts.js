@@ -172,21 +172,23 @@ export function setupFor(p, host, opts = {}) {
       };
     }
     case "muse": {
-      // Meta's Muse has no MCP menu: a custom connector takes an MCP server
-      // (it builds the bridge itself) or an OpenAPI document with a key in
-      // its Secure Credentials Store. Muse Code reads a skills folder.
+      // Meta's Muse has no MCP menu, but it will connect an MCP server when
+      // asked: one sentence to say to it is the whole setup. Muse Code reads
+      // a skills folder. Without an MCP server, the API with a key in Muse's
+      // Secure Credentials Store.
       /** @type {Snippet[]} */
       const snippets = [];
-      if (mcp) snippets.push({ label: "MCP server (Muse builds the bridge and signs in)", text: mcp });
-      if (e.openapi) snippets.push({ label: mcp ? "Or the OpenAPI document" : "OpenAPI document", text: e.openapi });
-      if (e.api) snippets.push({ label: "Base URL", text: e.api });
-      if (e.api || e.openapi) snippets.push({ label: "Credential name for a personal token", text: e.tokenName });
+      if (mcp) snippets.push({ label: "Say to Muse", text: `Connect ${p.name} as an MCP server at ${mcp} and sign in when it asks.` });
+      else {
+        if (e.openapi) snippets.push({ label: "OpenAPI document", text: e.openapi });
+        if (e.api) snippets.push({ label: "Base URL", text: e.api });
+        if (e.api || e.openapi) snippets.push({ label: "Credential name for a personal token", text: e.tokenName });
+      }
       if (e.skill) snippets.push({ label: "Muse Code: the skill", text: e.skill });
       return {
-        intro:
-          "Muse has no MCP menu. Ask it for a custom connector and hand it the MCP server, or the API with a personal token stored through its credential prompt.",
+        intro: mcp ? `Ask Muse to connect ${mcp}.` : "Muse has no MCP menu. Ask it for a custom connector to the API, with a personal token stored through its credential prompt.",
         snippets,
-        note: e.api || e.openapi ? `${tokenNote} The key goes into Muse's Secure Credentials Store, never into the chat.` : undefined,
+        note: !mcp && (e.api || e.openapi) ? `${tokenNote} The key goes into Muse's Secure Credentials Store, never into the chat.` : undefined,
       };
     }
     default: {
