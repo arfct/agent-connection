@@ -65,16 +65,13 @@ describe("setupFor", () => {
     assert.equal(setupFor(full, "gemini").snippets[0].text, "gemini extensions install https://github.com/arfct/menagerie");
   });
 
-  it("tells Muse about the MCP server, the OpenAPI document, and the credential name", () => {
-    const labels = setupFor(full, "muse").snippets.map((s) => s.label);
-    assert.deepEqual(labels, [
-      "MCP server (Muse builds the bridge and signs in)",
-      "Or the OpenAPI document",
-      "Base URL",
-      "Credential name for a personal token",
-      "Muse Code: the skill",
-    ]);
-    assert.equal(setupFor(full, "muse").snippets[3].text, "MENAGERIE_TOKEN");
+  it("gives Muse one sentence to connect the MCP server, and the API only without one", () => {
+    const s = setupFor(full, "muse");
+    assert.match(s.intro, /^Ask Muse to connect https:\/\//);
+    assert.deepEqual(s.snippets.map((x) => x.label), ["Say to Muse", "Muse Code: the skill"]);
+    assert.match(s.snippets[0].text, /Connect .* as an MCP server at https:\/\/.* and sign in when it asks\./);
+    const labels = setupFor(apiOnly, "muse").snippets.map((x) => x.label);
+    assert.deepEqual(labels.slice(0, 3), ["OpenAPI document", "Base URL", "Credential name for a personal token"]);
   });
 
   it("falls back to the API for MCP-only hosts when the product has no MCP server", () => {
