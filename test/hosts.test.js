@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { buildSubmission } from "../src/chatgpt.js";
-import { endpoints, guideHtml, guideMarkdown, HOSTS, hostForClientName, setupFor } from "../src/index.js";
+import { endpoints, guideHtml, guideMarkdown, HOSTS, hostById, hostForClientName, setupFor } from "../src/index.js";
 
 const full = {
   name: "Menagerie",
@@ -63,6 +63,10 @@ describe("setupFor", () => {
     assert.match(setupFor(full, "cursor").snippets[0].href, /^cursor:\/\/anysphere\.cursor-deeplink\/mcp\/install\?name=menagerie&config=/);
     assert.match(setupFor(full, "vscode").snippets[0].href, /^vscode:mcp\/install\?/);
     assert.equal(setupFor(full, "gemini").snippets[0].text, "gemini extensions install https://github.com/arfct/menagerie");
+  });
+
+  it("counts Muse as an MCP host", () => {
+    assert.equal(hostById("muse").mcp, true);
   });
 
   it("gives Muse one sentence to connect the MCP server, and the API only without one", () => {

@@ -17,7 +17,7 @@ export const HOSTS = [
   { id: "gemini", label: "Gemini", mcp: true },
   { id: "cursor", label: "Cursor", mcp: true },
   { id: "vscode", label: "VS Code", mcp: true },
-  { id: "muse", label: "Muse", mcp: false },
+  { id: "muse", label: "Muse", mcp: true },
   { id: "other", label: "Other", mcp: true },
 ];
 
