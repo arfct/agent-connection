@@ -45,7 +45,7 @@ The panel, in any page (React included; import `@arfct/agent-connection/react` f
   source="https://github.com/arfct/menagerie" marketplace="arfct/menagerie"></agent-connection>
 ```
 
-Attributes mirror the product fields (`anonymous-mcp`, `token-name`, `no-mcp`); `host` picks the open tab; `anonymous` shows the tokenless endpoint when the product has one. Setting the `product` property replaces the attributes. It fires `hostchange` and `copy`. Theme it with custom properties on the element: `--agent-connection-accent`, `--agent-connection-on-accent`, `--agent-connection-muted`, `--agent-connection-line`, `--agent-connection-tonal`, `--agent-connection-radius`, `--agent-connection-field-radius`.
+Attributes mirror the product fields (`anonymous-mcp`, `token-name`, `no-mcp`); `host` picks the open tab; `anonymous` shows the tokenless endpoint when the product has one. Setting the `product` property replaces the attributes. It fires `hostchange` and `copy`. Theme it with custom properties on the element: `--agent-connection-accent`, `--agent-connection-on-accent`, `--agent-connection-muted`, `--agent-connection-line`, `--agent-connection-tonal`, `--agent-connection-radius`, `--agent-connection-field-radius`, and `--agent-connection-surface` (the More menu's background; defaults to `Canvas`).
 
 The ChatGPT submission, from the tool list the MCP server serves:
 

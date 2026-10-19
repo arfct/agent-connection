@@ -49,7 +49,10 @@ What each host needs to connect, with where the fact came from and when it was l
   - It asks for OIDC scopes (`openid email profile`): drop scopes outside the product's vocabulary and grant the default instead of refusing. Source: arfct/menagerie `worker/src/oauth/server.ts`, tests in `worker/tests/apps.test.ts`.
 - Sources: arfct/agent-connection #1 for the one-sentence connect; parallel.ai, "How to create custom integrations with Meta Muse" (2026-09-14) and "The best MCP servers and connectors for Meta Muse"; chatprd.ai, "Connect Meta Muse". Checked 2026-10-19. Not verified against Meta's own documentation; reopen when a Meta page can be cited.
 
-## Other
+## General
+
+Shown as "General" (id `other`): the fallback for any client not listed.
+
 
 - Any MCP client over Streamable HTTP takes the URL and follows the OAuth discovery (RFC 9728 → RFC 8414, PKCE S256, Client ID Metadata Documents or RFC 7591).
 - Anything else takes the REST API with a personal token as a bearer, created by the person in the product's settings.

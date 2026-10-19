@@ -30,6 +30,8 @@ export interface Host {
   label: string;
   /** Reaches the product by MCP; false means it takes the REST API with a token. */
   mcp: boolean;
+  /** Listed in the panel's More menu instead of as its own tab. */
+  more?: boolean;
 }
 
 export interface Snippet {

@@ -10,15 +10,17 @@
 /** @typedef {import("./index.js").Setup} Setup */
 /** @typedef {import("./index.js").Snippet} Snippet */
 
+// In the order people see them. `more` hosts sit in the panel's More menu
+// rather than a tab of their own; the guide lists every host in this order.
 /** @type {Host[]} */
 export const HOSTS = [
   { id: "claude", label: "Claude", mcp: true },
   { id: "chatgpt", label: "ChatGPT", mcp: true },
   { id: "gemini", label: "Gemini", mcp: true },
-  { id: "cursor", label: "Cursor", mcp: true },
-  { id: "vscode", label: "VS Code", mcp: true },
   { id: "muse", label: "Muse", mcp: true },
-  { id: "other", label: "Other", mcp: true },
+  { id: "other", label: "General", mcp: true },
+  { id: "cursor", label: "Cursor", mcp: true, more: true },
+  { id: "vscode", label: "VS Code", mcp: true, more: true },
 ];
 
 export const CHATGPT_CONNECTORS_URL = "https://chatgpt.com/#settings/Connectors";
@@ -186,7 +188,9 @@ export function setupFor(p, host, opts = {}) {
       }
       if (e.skill) snippets.push({ label: "Muse Code: the skill", text: e.skill });
       return {
-        intro: mcp ? `Ask Muse to connect ${mcp}.` : "Muse has no MCP menu. Ask it for a custom connector to the API, with a personal token stored through its credential prompt.",
+        intro: mcp
+          ? `Ask Muse to connect ${mcp}.`
+          : "Muse has no MCP menu. Ask it for a custom connector to the API, with a personal token stored through its credential prompt.",
         snippets,
         note: !mcp && (e.api || e.openapi) ? `${tokenNote} The key goes into Muse's Secure Credentials Store, never into the chat.` : undefined,
       };
