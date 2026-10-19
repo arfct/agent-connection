@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { buildSubmission } from "../src/chatgpt.js";
-import { endpoints, guideHtml, guideMarkdown, HOSTS, hostForClientName, setupFor } from "../src/index.js";
+import { endpoints, guideHtml, guideMarkdown, HOSTS, hostById, hostForClientName, setupFor } from "../src/index.js";
 
 const full = {
   name: "Menagerie",
@@ -65,10 +65,28 @@ describe("setupFor", () => {
     assert.equal(setupFor(full, "gemini").snippets[0].text, "gemini extensions install https://github.com/arfct/menagerie");
   });
 
+  it("orders the tabs Claude, ChatGPT, Gemini, Muse, General, with Cursor and VS Code under More", () => {
+    assert.deepEqual(
+      HOSTS.filter((h) => !h.more).map((h) => h.label),
+      ["Claude", "ChatGPT", "Gemini", "Muse", "General"],
+    );
+    assert.deepEqual(
+      HOSTS.filter((h) => h.more).map((h) => h.label),
+      ["Cursor", "VS Code"],
+    );
+  });
+
+  it("counts Muse as an MCP host", () => {
+    assert.equal(hostById("muse").mcp, true);
+  });
+
   it("gives Muse one sentence to connect the MCP server, and the API only without one", () => {
     const s = setupFor(full, "muse");
     assert.match(s.intro, /^Ask Muse to connect https:\/\//);
-    assert.deepEqual(s.snippets.map((x) => x.label), ["Say to Muse", "Muse Code: the skill"]);
+    assert.deepEqual(
+      s.snippets.map((x) => x.label),
+      ["Say to Muse", "Muse Code: the skill"],
+    );
     assert.match(s.snippets[0].text, /Connect .* as an MCP server at https:\/\/.* and sign in when it asks\./);
     const labels = setupFor(apiOnly, "muse").snippets.map((x) => x.label);
     assert.deepEqual(labels.slice(0, 3), ["OpenAPI document", "Base URL", "Credential name for a personal token"]);

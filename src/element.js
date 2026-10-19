@@ -16,6 +16,13 @@ const PRODUCT_ATTRS = ["name", "slug", "origin", "mcp", "anonymous-mcp", "api", 
 
 const STYLE = `
 :host{display:block;font:inherit;color:inherit}
+.more{position:relative}
+.tab[aria-haspopup]::after{content:"";display:inline-block;margin-left:6px;vertical-align:2px;border:4px solid transparent;border-top-color:currentColor;border-bottom-width:0}
+.menu{position:absolute;z-index:1;top:calc(100% + 4px);left:0;min-width:100%;display:flex;flex-direction:column;padding:4px;border:1px solid var(--agent-connection-line,#d6d3d1);border-radius:var(--agent-connection-field-radius,8px);background:var(--agent-connection-surface,Canvas);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.menu[hidden]{display:none}
+.item{appearance:none;border:0;border-radius:var(--agent-connection-field-radius,8px);padding:6px 10px;text-align:left;white-space:nowrap;font:inherit;font-size:13px;line-height:20px;cursor:pointer;background:transparent;color:var(--agent-connection-fg,inherit)}
+.item:hover,.item:focus-visible{background:var(--agent-connection-tonal,#e7e5e4);outline:none}
+.item[aria-checked="true"]{font-weight:600}
 *{box-sizing:border-box}
 .tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
 .tab{appearance:none;border:0;border-radius:var(--agent-connection-radius,999px);padding:6px 12px;font:inherit;font-size:13px;line-height:20px;cursor:pointer;background:transparent;color:var(--agent-connection-muted,#78716c)}
@@ -42,6 +49,13 @@ export class AgentConnectionElement extends HTMLElement {
   #product = null;
   #host = "claude";
   #copied = "";
+  #menuOpen = false;
+  // a click anywhere outside the More menu closes it
+  #onOutside = (/** @type {Event} */ e) => {
+    if (this.#menuOpen && !e.composedPath().some((n) => n instanceof Element && n.classList?.contains("more"))) {
+      this.#setMenu(false);
+    }
+  };
 
   constructor() {
     super();
@@ -81,6 +95,7 @@ export class AgentConnectionElement extends HTMLElement {
 
   set host(id) {
     this.#host = id;
+    this.#menuOpen = false;
     this.render();
     this.dispatchEvent(new CustomEvent("hostchange", { detail: { host: id }, bubbles: true }));
   }
@@ -88,7 +103,21 @@ export class AgentConnectionElement extends HTMLElement {
   connectedCallback() {
     const h = this.getAttribute("host");
     if (h) this.#host = h;
+    document.addEventListener("click", this.#onOutside, true);
     this.render();
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener("click", this.#onOutside, true);
+  }
+
+  /** @param {boolean} open */
+  #setMenu(open) {
+    this.#menuOpen = open;
+    const root = this.shadowRoot;
+    root?.querySelector(".menu")?.toggleAttribute("hidden", !open);
+    root?.querySelector(".tab[aria-haspopup]")?.setAttribute("aria-expanded", String(open));
+    if (open) /** @type {HTMLElement | null | undefined} */ (root?.querySelector(".item[aria-checked=true], .item"))?.focus();
   }
 
   attributeChangedCallback(name, _old, value) {
@@ -111,7 +140,7 @@ export class AgentConnectionElement extends HTMLElement {
     tabs.className = "tabs";
     tabs.setAttribute("role", "tablist");
     tabs.setAttribute("aria-label", "Agent host");
-    for (const h of HOSTS) {
+    for (const h of HOSTS.filter((x) => !x.more)) {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "tab";
@@ -123,6 +152,7 @@ export class AgentConnectionElement extends HTMLElement {
       });
       tabs.append(b);
     }
+    tabs.append(this.#moreMenu(HOSTS.filter((x) => x.more)));
     root.append(tabs);
 
     const panel = document.createElement("div");
@@ -140,6 +170,54 @@ export class AgentConnectionElement extends HTMLElement {
       panel.append(note);
     }
     root.append(panel);
+  }
+
+  /**
+   * The More tab: a menu of the hosts that don't get a tab of their own.
+   * It reads as selected while one of them is the open host.
+   * @param {import("./index.js").Host[]} hosts
+   */
+  #moreMenu(hosts) {
+    const wrap = document.createElement("div");
+    wrap.className = "more";
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "tab";
+    trigger.setAttribute("role", "tab");
+    trigger.setAttribute("aria-haspopup", "menu");
+    trigger.setAttribute("aria-expanded", String(this.#menuOpen));
+    trigger.setAttribute("aria-selected", String(hosts.some((h) => h.id === this.#host)));
+    trigger.textContent = "More";
+    trigger.addEventListener("click", () => this.#setMenu(!this.#menuOpen));
+    const menu = document.createElement("div");
+    menu.className = "menu";
+    menu.setAttribute("role", "menu");
+    menu.toggleAttribute("hidden", !this.#menuOpen);
+    menu.addEventListener("keydown", (e) => {
+      const items = /** @type {HTMLElement[]} */ ([...menu.querySelectorAll(".item")]);
+      const at = items.indexOf(/** @type {HTMLElement} */ (this.shadowRoot?.activeElement));
+      if (e.key === "Escape") {
+        this.#setMenu(false);
+        trigger.focus();
+      } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        items[(at + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length]?.focus();
+      }
+    });
+    for (const h of hosts) {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "item";
+      item.setAttribute("role", "menuitemradio");
+      item.setAttribute("aria-checked", String(h.id === this.#host));
+      item.textContent = h.label;
+      item.addEventListener("click", () => {
+        this.host = h.id;
+      });
+      menu.append(item);
+    }
+    wrap.append(trigger, menu);
+    return wrap;
   }
 
   /** @param {import("./index.js").Snippet} s */
