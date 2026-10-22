@@ -62,6 +62,7 @@ export interface Endpoints {
 
 export const HOSTS: Host[];
 export const CHATGPT_CONNECTORS_URL: string;
+export const GEMINI_APP_URL: string;
 export function hostById(id: string): Host;
 export function hostForClientName(clientName: string | null | undefined): HostId;
 export function endpoints(p: Product): Endpoints;
