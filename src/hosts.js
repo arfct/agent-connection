@@ -24,6 +24,7 @@ export const HOSTS = [
 ];
 
 export const CHATGPT_CONNECTORS_URL = "https://chatgpt.com/#settings/Connectors";
+export const GEMINI_APP_URL = "https://gemini.google.com/";
 
 /** @param {string} id */
 export function hostById(id) {
@@ -143,12 +144,17 @@ export function setupFor(p, host, opts = {}) {
     }
     case "gemini": {
       if (!mcp) return apiOnly(p, "Gemini", api, tokenNote);
+      // The Gemini app connects a custom app from the website only; it then works on the web and the phone.
       /** @type {Snippet[]} */
-      const snippets = [];
-      if (e.source && !opts.anonymous) snippets.push({ label: "Extension, with the skill", text: `gemini extensions install ${e.source}` });
-      snippets.push({ label: e.source && !opts.anonymous ? "Server only" : "Gemini CLI", text: `gemini mcp add --transport http ${p.slug} ${mcp}` });
+      const snippets = [{ label: "Gemini app: Settings → Connected Apps → Add a custom app", text: mcp, href: GEMINI_APP_URL }];
+      if (e.source && !opts.anonymous) snippets.push({ label: "Gemini CLI: the extension, with the skill", text: `gemini extensions install ${e.source}` });
+      snippets.push({
+        label: e.source && !opts.anonymous ? "Gemini CLI: the server only" : "Gemini CLI",
+        text: `gemini mcp add --transport http ${p.slug} ${mcp}`,
+      });
       return {
-        intro: e.source ? "The extension carries the skill as well as the server; the plain add is the server only." : "Gemini CLI adds the server directly.",
+        intro:
+          "In the Gemini app on the web, add a custom app with this address and sign in when it asks; it then works on the phone too. Custom apps need a personal Google account. Gemini CLI adds the server directly.",
         snippets,
       };
     }

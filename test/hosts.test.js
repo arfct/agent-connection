@@ -62,7 +62,8 @@ describe("setupFor", () => {
     assert.equal(claude.snippets[2].text, "claude plugin marketplace add arfct/menagerie && claude plugin install menagerie@menagerie");
     assert.match(setupFor(full, "cursor").snippets[0].href, /^cursor:\/\/anysphere\.cursor-deeplink\/mcp\/install\?name=menagerie&config=/);
     assert.match(setupFor(full, "vscode").snippets[0].href, /^vscode:mcp\/install\?/);
-    assert.equal(setupFor(full, "gemini").snippets[0].text, "gemini extensions install https://github.com/arfct/menagerie");
+    assert.equal(setupFor(full, "gemini").snippets[0].text, "https://menagerie.fyi/mcp");
+    assert.equal(setupFor(full, "gemini").snippets[1].text, "gemini extensions install https://github.com/arfct/menagerie");
   });
 
   it("orders the tabs Claude, ChatGPT, Gemini, Muse, General, with Cursor and VS Code under More", () => {
@@ -117,7 +118,7 @@ describe("setupFor", () => {
 
   it("omits the plugin line without a marketplace and the extension line without a source", () => {
     assert.equal(setupFor(mcpOnly, "claude").snippets.length, 2);
-    assert.equal(setupFor({ ...mcpOnly, source: null }, "gemini").snippets.length, 1);
+    assert.equal(setupFor({ ...mcpOnly, source: null }, "gemini").snippets.length, 2);
   });
 });
 

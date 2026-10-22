@@ -7,6 +7,7 @@ export {
   claudeConnectorLink,
   cursorInstallLink,
   endpoints,
+  GEMINI_APP_URL,
   HOSTS,
   hostById,
   hostForClientName,

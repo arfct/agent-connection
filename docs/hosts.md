@@ -20,6 +20,12 @@ What each host needs to connect, with where the fact came from and when it was l
 - Listing in the ChatGPT app directory: the submission JSON (schema `chatgpt-app-submission.v1`) with `app_info`, per-tool `annotations` and three justifications, test cases, and negative test cases; the server must publish `/.well-known/openai-apps-challenge` with the portal's token, and review has wanted `/oauth/userinfo` with `sub` and `email` plus OpenID discovery.
 - Checked 2026-10-05 against arfct/vapor's submission.
 
+## Gemini
+
+- Gemini app: on gemini.google.com only, Settings → Connected Apps (or Personal Intelligence → Connected Apps) → Add a custom app, with the MCP URL. It registers itself by dynamic client registration and signs in by OAuth; a server without registration takes a client id and secret under Advanced features. Once connected, the app works on the web and the phone. Custom apps need a personal Google account, Keep Activity on, English, and someone 18 or older in the US.
+- Its token exchange arrives from Google's servers, so a firewall that blocks unfamiliar user agents can stop it after consent ("Account linking is required"). It reads the resource metadata at the RFC 9728 path (`/.well-known/oauth-protected-resource/mcp`) and asks for the scopes it lists there.
+- Checked 2026-10-18 against menagerie.fyi.
+
 ## Gemini CLI
 
 - `gemini extensions install <github repo url>` installs an extension from a repo with `gemini-extension.json` at its root (`mcpServers` with `httpUrl` and `oauth.enabled`) and `skills/` beside it.
